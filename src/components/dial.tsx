@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { Arc, Circle, Group, Layer, Rect, Stage, Text } from 'react-konva'
+import React, { FC, useState } from 'react'
+import { Arc, Circle, Group, Rect, Text } from 'react-konva'
 
-export const Dial: React.FC<{
+export const Dial: FC<{
 	label?: string
 	radius?: number
 	x?: number
@@ -26,13 +26,11 @@ export const Dial: React.FC<{
 	const rotation = 90 + (360 - totalAngle) / 2
 
 	return (
-		<Group>
+		<Group x={x} y={y}>
 			<Arc
 				innerRadius={0.8 * radius}
 				outerRadius={radius}
 				angle={totalAngle * (1 - rawValue)}
-				x={x}
-				y={y}
 				rotation={rotation + totalAngle * rawValue}
 				fill='black'
 			/>
@@ -40,8 +38,6 @@ export const Dial: React.FC<{
 				innerRadius={0.8 * radius}
 				outerRadius={radius}
 				angle={totalAngle * rawValue}
-				x={x}
-				y={y}
 				rotation={rotation}
 				fill='cyan'
 			/>
@@ -53,8 +49,8 @@ export const Dial: React.FC<{
 				fill='transparent'
 				width={radius * 2}
 				height={radius * 2}
-				x={x - radius}
-				y={y - radius}
+				x={-radius}
+				y={-radius}
 				onMouseOver={(event) => {
 					if (event.evt.target instanceof HTMLElement) {
 						event.evt.target.style.cursor = 'grab'
@@ -96,16 +92,16 @@ export const Dial: React.FC<{
 				text={displayValue(mapValue(rawValue))}
 				align='center'
 				width={2 * radius}
-				x={x - radius}
-				y={y + radius}
+				x={-radius}
+				y={radius}
 			/>
 			{label && (
 				<Text
 					text={label}
 					align='center'
 					width={2 * radius}
-					x={x - radius}
-					y={y - radius - 16}
+					x={-radius}
+					y={-radius - 16}
 				/>
 			)}
 		</Group>
