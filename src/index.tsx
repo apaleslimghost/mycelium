@@ -1,8 +1,13 @@
 import React, { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Arc, Circle, Group, Layer, Rect, Stage, Text } from 'react-konva'
+import Konva from 'konva'
 
 const root = createRoot(document.querySelector('main')!)
+
+function isStage(node: Konva.Node): node is Konva.Stage {
+	return node.nodeType === 'Stage'
+}
 
 const Dial: React.FC<{
 	label?: string
@@ -58,9 +63,21 @@ const Dial: React.FC<{
 				height={radius * 2}
 				x={x - radius}
 				y={y - radius}
-				onMouseDown={async (event) => {
+				onMouseOver={(event) => {
+					if (event.evt.target instanceof HTMLElement) {
+						event.evt.target.style.cursor = 'grab'
+					}
+				}}
+				onMouseOut={(event) => {
+					if (event.evt.target instanceof HTMLElement) {
+						event.evt.target.style.cursor = 'default'
+					}
+				}}
+				onMouseDown={(event) => {
 					setDragging(true)
-					;(event.evt.target as Element).requestPointerLock()
+					if (event.evt.target instanceof Element) {
+						event.evt.target.requestPointerLock()
+					}
 				}}
 				onMouseUp={(event) => {
 					setDragging(false)
@@ -104,10 +121,27 @@ const Dial: React.FC<{
 }
 
 const App = () => (
-	<Stage width={200} height={100}>
+	<Stage width={300} height={100}>
 		<Layer>
 			<Dial label='Foo' x={50} y={50} defaultValue={0.4} />
-			<Dial label='Bar' x={100} y={50} defaultValue={0.6} />
+			<Dial
+				label='Bar'
+				x={100}
+				y={50}
+				defaultValue={0.6}
+				mapValue={(v) => v * 100}
+				displayValue={(v) => v.toFixed(0) + '%'}
+			/>
+			<Dial
+				label='Baz'
+				x={150}
+				y={50}
+				defaultValue={0.6}
+				mapValue={(v) => 20000 * 2000 ** (v - 1)}
+				displayValue={(v) =>
+					v < 1000 ? v.toFixed(0) + 'Hz' : (v / 1000).toFixed(2) + 'KHz'
+				}
+			/>
 		</Layer>
 	</Stage>
 )
